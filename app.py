@@ -6,6 +6,9 @@ from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 import time
 
+# ⬅️ KONFIGURACJA APLIKACJI – MUSI BYĆ NA SAMYM POCZĄTKU
+st.set_page_config(page_title="Analiza kontekstowa domen", layout="centered")
+
 # MODEL
 @st.cache_resource
 def load_model():
@@ -13,11 +16,9 @@ def load_model():
 
 model = load_model()
 
-# KONFIGURACJA APLIKACJI
-st.set_page_config(page_title="Analiza kontekstowa domen", layout="centered")
+# INTERFEJS
 st.title("🔍 Analiza semantyczna witryn z pliku")
 
-# WPROWADZANIE DANYCH
 st.header("🎯 Wprowadź dane wejściowe:")
 product = st.text_area("🛍️ Opis produktu", "Ekskluzywne zegarki dla mężczyzn")
 audience = st.text_area("👥 Grupa docelowa", "Zamożni mężczyźni 35+, zainteresowani modą i prestiżem")
