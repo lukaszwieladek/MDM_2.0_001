@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer, util
 import pandas as pd
 import time
 
-# ⬅️ KONFIGURACJA APLIKACJI – MUSI BYĆ NA SAMYM POCZĄTKU
+# ⬅️ KONFIGURACJA APLIKACJI (MUSI BYĆ PIERWSZA)
 st.set_page_config(page_title="Analiza kontekstowa domen", layout="centered")
 
 # MODEL
@@ -20,8 +20,8 @@ model = load_model()
 st.title("🔍 Analiza semantyczna witryn z pliku")
 
 st.header("🎯 Wprowadź dane wejściowe:")
-product = st.text_area("🛍️ Opis produktu", "Ekskluzywne zegarki dla mężczyzn")
-audience = st.text_area("👥 Grupa docelowa", "Zamożni mężczyźni 35+, zainteresowani modą i prestiżem")
+product = st.text_area("🛍️ Opis produktu", "Tutaj opisz produkt")
+audience = st.text_area("👥 Grupa docelowa", "Tutaj opisz grupę docelową")
 
 # Wczytywanie listy domen z pliku
 def load_sites_from_file(file_path="sites.txt"):
@@ -83,7 +83,10 @@ if st.button("🚀 Rozpocznij analizę"):
 
     st.info("🔬 Trwa analiza... może to potrwać kilka minut.")
     progress = st.progress(0)
+    eta_placeholder = st.empty()
+
     total = len(sites)
+    start_time = time.time()
 
     for idx, site in enumerate(sites):
         links = extract_links(site, limit=30)
@@ -105,7 +108,14 @@ if st.button("🚀 Rozpocznij analizę"):
             "Najlepiej dopasowana podstrona": best_url,
             "Dopasowanie (%)": round(best_score * 100, 2)
         })
+
+        # ⏱️ Aktualizacja paska postępu i licznika czasu
         progress.progress((idx + 1) / total)
+        elapsed = time.time() - start_time
+        avg_time = elapsed / (idx + 1)
+        remaining = avg_time * (total - idx - 1)
+        mins, secs = divmod(int(remaining), 60)
+        eta_placeholder.info(f"⏱️ Szacowany czas do końca: {mins} min {secs} sek")
 
     df = pd.DataFrame(sorted(results, key=lambda x: -x["Dopasowanie (%)"]))
     st.success(f"✅ Przeanalizowano {len(df)} witryn.")
